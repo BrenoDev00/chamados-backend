@@ -12,6 +12,7 @@ Repositório back-end do projeto de chamados.
 - Banco de dados Postgres
 - Banco em memória H2
 - Gerenciador de dependências Maven
+- I.A Gemini para apoio em tarefas e sugestões
 
 ## Chcklist
 

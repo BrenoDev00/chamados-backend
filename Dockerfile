@@ -5,13 +5,12 @@ FROM maven:3.9-eclipse-temurin-22-alpine AS builder
 
 WORKDIR /build
 
-# Copia apenas os arquivos de dependência primeiro para aproveitar o cache do Docker
+# Copia os arquivos de dependência e código-fonte
 COPY pom.xml .
-RUN mvn dependency:go-offline -B
-
-# Copia o código-fonte do projeto e realiza o build sem executar os testes unitários
 COPY src ./src
-RUN mvn package -DskipTests
+
+# Realiza o build sem executar os testes unitários
+RUN mvn clean package -DskipTests
 
 # ==============================================================================
 # ETAPA 2: Runtime (Execução em Produção)
@@ -27,8 +26,6 @@ USER spring:spring
 # Copia o JAR gerado na etapa de build
 COPY --from=builder /build/target/*.jar app.jar
 
-# Expõe a porta padrão do Spring Boot
 EXPOSE 8080
 
-# Executa o JAR diretamente com o perfil padrão do projeto
 ENTRYPOINT ["java", "-Xms256m", "-Xmx512m", "-jar", "app.jar"]
