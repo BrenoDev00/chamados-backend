@@ -29,6 +29,8 @@
 - data fim
 - hora fim
 - observações
+- aberto por (técnico que abriu o chamado)
+- finalizado por (técnico que finalizou o chamado)
 
 ### equipamentos
 
