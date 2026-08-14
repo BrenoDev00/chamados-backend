@@ -1,7 +1,7 @@
 # ==============================================================================
 # ETAPA 1: Build (Compilação)
 # ==============================================================================
-FROM maven:3.9-eclipse-temurin-22-alpine AS builder
+FROM maven:3.9-eclipse-temurin-25-alpine AS builder
 
 WORKDIR /build
 
@@ -15,7 +15,7 @@ RUN mvn clean package -DskipTests
 # ==============================================================================
 # ETAPA 2: Runtime (Execução em Produção)
 # ==============================================================================
-FROM alpine/java:22-jdk AS runner
+FROM alpine/java:25-jdk AS runner
 
 WORKDIR /app
 
