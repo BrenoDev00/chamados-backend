@@ -52,8 +52,8 @@ public class Technician{
         this.email = email;
     }
 
-    public String getShift(){
-        return this.shift.getDescription();
+    public TechnicianShift getShift(){
+        return this.shift;
     }
 
     public void setShift(TechnicianShift shift){
