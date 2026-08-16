@@ -33,6 +33,7 @@ public class TechnicianService {
        updatedTechnician.setName(technician.name());
        updatedTechnician.setEmail(technician.email());
        updatedTechnician.setShift(technician.shift());
+       this.technicianRepository.save(updatedTechnician);
 
        return new TechnicianOutputDTO(updatedTechnician);
     }

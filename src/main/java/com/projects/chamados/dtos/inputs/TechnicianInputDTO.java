@@ -5,13 +5,12 @@ import jakarta.validation.constraints.*;
 
 public record TechnicianInputDTO (
         @NotBlank(message = "O nome é obrigatório.")
-        @Min(value = 3, message = "Mínimo 3 caracteres.")
-        @Max(value = 84, message = "Máximo 64 caracteres.")
+        @Size(min=3, max=64, message = "O nome deve ter entre 3 e 64 caracteres.")
         String name,
         @NotBlank(message = "O e-mail é obrigatório.")
-        @Email(message = "Informe um formato válido.")
+        @Email(message = "Informe um formato de e-mail válido.")
         String email,
-        @NotNull(message = "O turno é obrigatório. Valores aceitos: DAYTIME ou NIGHTTIME.")
+        @NotNull(message = "O turno é obrigatório. Valores aceitos: Noturno ou Diurno.")
         TechnicianShift shift
 ){
 }
