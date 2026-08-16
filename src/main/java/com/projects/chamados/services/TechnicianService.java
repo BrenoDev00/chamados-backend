@@ -14,8 +14,6 @@ import java.util.UUID;
 
 @Service
 public class TechnicianService {
-    public TechnicianService(){}
-
     @Autowired
     private TechnicianRepository technicianRepository;
 
