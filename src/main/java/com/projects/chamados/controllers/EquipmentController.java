@@ -1,0 +1,32 @@
+package com.projects.chamados.controllers;
+
+import com.projects.chamados.dtos.outputs.EquipmentOutputDTO;
+import com.projects.chamados.services.EquipmentService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
+
+@RestController
+@RequestMapping(value="/equipments")
+public class EquipmentController {
+    @Autowired
+    private EquipmentService equipmentService;
+
+    @GetMapping
+    public ResponseEntity<List<EquipmentOutputDTO>> getAll(){
+        var equipments = this.equipmentService.listAll();
+
+        return ResponseEntity.ok().body(equipments);
+    }
+
+    @DeleteMapping(value="/{equipmentId}")
+    public ResponseEntity<Void> delete(@PathVariable UUID equipmentId){
+        this.equipmentService.deleteById(equipmentId);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+}
