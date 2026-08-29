@@ -12,7 +12,7 @@
 - permitir cadastrar um novo chamado.
 - permitir atualizar o status de um chamado.
 - permitir atualizar os dados de um chamado.
-- permitir pesquisar chamados cadastrados.
+- permitir pesquisar chamados cadastrados pelo ID do chamado e ID Sefit do equipamento.
 - (opcional) permitir paginar chamados cadastrados.
 - (opcional) permitir ordernar as colunas de status de chamado e data de cadastro de chamado.
 
@@ -38,7 +38,7 @@
 - permitir listar equipamentos cadastrados.
 - permitir editar equipamentos cadastrados.
 - permitir excluir equipamentos cadastrados.
-- permitir pesquisar equipamentos cadastrados.
+- permitir pesquisar equipamentos cadastrados pelo ID Sefit ou Local/Via.
 - (opcional) permitir paginar equipamentos cadastrados.
 - (opcional) permitir ordernar as colunas de tipo de equipamento e número de série de equipamento.
 
