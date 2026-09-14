@@ -15,7 +15,7 @@ RUN mvn clean package -DskipTests
 # ==============================================================================
 # ETAPA 2: Runtime (Execução em Produção)
 # ==============================================================================
-FROM alpine/java:25-jdk AS runner
+FROM eclipse-temurin:25-jdk-alpine AS runner
 
 WORKDIR /app
 
