@@ -1,12 +1,20 @@
 # chamados-backend
-
 Repositório back-end do projeto de chamados.
 
-## Tecnologias utilizadas
+## Descrição
+- Aplicação para acompanhamento e gerenciamento de chamados realizados por técnicos de monitoramento NOC.
 
+## Funcionalidades
+- Cadastrar, listar, editar, excluir e pesquisar chamados.
+- Cadastrar, listar, editar, excluir e pesquisar por equipamentos.
+- Listar e editar técnicos do sistema.
+- Autenticação JWT.
+
+## Tecnologias utilizadas
 - Java 25
-- Spring 4
+- Spring Boot 4
 - Spring Data
+- Spring Security
 - Docker e Docker Compose
 - Swagger
 - Banco de dados Postgres
@@ -14,10 +22,6 @@ Repositório back-end do projeto de chamados.
 - Gerenciador de dependências Maven
 - I.A Gemini para apoio em tarefas e sugestões
 
-## Chcklist
+## [Regras de negócio](./docs/business-rules.md)
 
-- [] Implementar toda a segurança necessária da aplicação
-- [] Criptografar senha de técnico
-- [] Implementar documentação dos endpoints
-- [] implementar variáveis de ambiente corretamente entre diferentes ambientes
-- [] (opcional) implementar testes unitários
+## [Modelagem de dados](./docs/data-model.png)
