@@ -30,7 +30,10 @@ public class OpenTicket {
     private String observations;
     @ManyToOne
     @JoinColumn(name = "technician_id")
-    private Technician technician;
+    private Technician openedBy;
+    @ManyToOne
+    @JoinColumn(name = "finished_by_id")
+    private Technician finishedBy;
     @ManyToOne
     @JoinColumn(name = "equipment_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -40,7 +43,7 @@ public class OpenTicket {
 
     }
 
-    public OpenTicket(UUID id, String idChamado, OpenTicketStatus status, String incident, LocalDate startDate, LocalTime startTime, LocalDate endDate, LocalTime endTime, String observations, Technician technician, Equipment equipment) {
+    public OpenTicket(UUID id, String idChamado, OpenTicketStatus status, String incident, LocalDate startDate, LocalTime startTime, LocalDate endDate, LocalTime endTime, String observations, Technician openedBy, Technician finishedBy, Equipment equipment) {
         this.id = id;
         this.idChamado = idChamado;
         this.status = status;
@@ -50,7 +53,8 @@ public class OpenTicket {
         this.endDate = endDate;
         this.endTime = endTime;
         this.observations = observations;
-        this.technician = technician;
+        this.openedBy = openedBy;
+        this.finishedBy = finishedBy;
         this.equipment = equipment;
     }
 
@@ -90,8 +94,12 @@ public class OpenTicket {
         this.observations = observations;
     }
 
-    public void setTechnician(Technician technician){
-        this.technician = technician;
+    public void setOpenedBy(Technician openedBy){
+        this.openedBy = openedBy;
+    }
+
+    public void setFinishedBy(Technician finishedBy){
+        this.finishedBy = finishedBy;
     }
 
     public void setEquipment(Equipment equipment){
@@ -134,8 +142,12 @@ public class OpenTicket {
         return observations;
     }
 
-    public Technician getTechnician(){
-        return this.technician;
+    public Technician getOpenedBy(){
+        return this.openedBy;
+    }
+
+    public Technician getFinishedBy(){
+        return this.finishedBy;
     }
 
     public Equipment getEquipment(){

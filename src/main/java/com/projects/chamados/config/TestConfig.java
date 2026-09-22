@@ -46,9 +46,9 @@ public class TestConfig implements CommandLineRunner {
         var equipmentThree = new Equipment(null, "Avenida Limeira Principal", "9098098", EquipmentType.OCR, "1129", Marie);
 
         // instâncias de chamados
-        var openTicketOne = new OpenTicket(null, "1", OpenTicketStatus.COMPLETED, "Equipamento off-line", LocalDate.now(), LocalTime.now(), LocalDate.now().plusDays(2), LocalTime.now(), null, John, equipmentOne);
-        var openTicketTwo = new OpenTicket(null, "22", OpenTicketStatus.IN_PROGRESS, "Equipamento vandalizado", LocalDate.now(), LocalTime.now(), null, null, "Vandalizado.", Marie, equipmentTwo);
-        var openTicketThree = new OpenTicket(null, "67", OpenTicketStatus.COMPLETED, "Equipamento off-line", LocalDate.now(), LocalTime.now(), LocalDate.now().plusDays(2), LocalTime.now(), null, Paul, equipmentThree);
+        var openTicketOne = new OpenTicket(null, "1", OpenTicketStatus.COMPLETED, "Equipamento off-line", LocalDate.now(), LocalTime.now(), LocalDate.now().plusDays(2), LocalTime.now(), null, John, John, equipmentOne);
+        var openTicketTwo = new OpenTicket(null, "22", OpenTicketStatus.IN_PROGRESS, "Equipamento vandalizado", LocalDate.now(), LocalTime.now(), null, null, "Vandalizado.", Marie, null, equipmentTwo);
+        var openTicketThree = new OpenTicket(null, "67", OpenTicketStatus.COMPLETED, "Equipamento off-line", LocalDate.now(), LocalTime.now(), LocalDate.now().plusDays(2), LocalTime.now(), null, Paul, Paul, equipmentThree);
 
         // salvamento de entidades
         this.technicianRepository.saveAll(Arrays.asList(John, Marie, Andrew, Paul));

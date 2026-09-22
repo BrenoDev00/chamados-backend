@@ -26,9 +26,6 @@ public record OpenTicketInputDTO (
         @Size(max=84, message = "A observação deve ter no máximo 84 caracteres.")
         String observations,
         @NotNull(message = "O id do equipamento é obrigatório.")
-        UUID equipmentId,
-        @NotNull(message = "O id do técnico é obrigatório.")
-        UUID technicianId
-
+        UUID equipmentId
 ) {
 }

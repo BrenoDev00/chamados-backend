@@ -20,7 +20,7 @@ public class Technician {
     private String password;
     @OneToMany(mappedBy = "technician")
     private List<Equipment> equipments = new ArrayList<>();
-    @OneToMany(mappedBy = "technician")
+    @OneToMany(mappedBy = "openedBy")
     private List<OpenTicket> openTickets = new ArrayList<>();
 
     public Technician() {

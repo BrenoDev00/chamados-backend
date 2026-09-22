@@ -55,7 +55,7 @@ public class OpenTicketService {
         this.findIfIdChamadoAlreadyExists(openTicket.idChamado());
         this.validateEndDateAndEndTimeFieldsByOpenTicketStatus(openTicket.endDate(), openTicket.endTime(), openTicket.status());
 
-        var technician = this.technicianService.findIfExists(openTicket.technicianId());
+        var authenticatedTechnician = this.technicianService.findAuthenticated();
         var equipment = this.equipmentService.findIfExists(openTicket.equipmentId());
 
         var createdOpenTicket = new OpenTicket();
@@ -68,7 +68,8 @@ public class OpenTicketService {
         createdOpenTicket.setEndTime(openTicket.endTime());
         createdOpenTicket.setObservations(openTicket.observations());
 
-        createdOpenTicket.setTechnician(technician);
+        createdOpenTicket.setOpenedBy(authenticatedTechnician);
+        createdOpenTicket.setFinishedBy(openTicket.status() == OpenTicketStatus.COMPLETED ? authenticatedTechnician : null);
         createdOpenTicket.setEquipment(equipment);
 
         this.openTicketRepository.save(createdOpenTicket);
@@ -77,19 +78,26 @@ public class OpenTicketService {
     }
 
     public OpenTicketOutputDTO updateById(UUID openTicketId, OpenTicketInputDTO openTicket){
-        String searchedIdChamado = this.findIfExists(openTicketId).getIdChamado();
+        var updatedOpenTicket = this.findIfExists(openTicketId);
 
-        if(!searchedIdChamado.equals(openTicket.idChamado())){
+        if(!updatedOpenTicket.getIdChamado().equals(openTicket.idChamado())){
             this.findIfIdChamadoAlreadyExists(openTicket.idChamado());
         }
 
         this.validateEndDateAndEndTimeFieldsByOpenTicketStatus(openTicket.endDate(), openTicket.endTime(), openTicket.status());
 
-        var technician = this.technicianService.findIfExists(openTicket.technicianId());
         var equipment = this.equipmentService.findIfExists(openTicket.equipmentId());
 
-        var updatedOpenTicket = new OpenTicket();
-        updatedOpenTicket.setId(openTicketId);
+        // mantém quem finalizou caso o chamado já esteja finalizado; registra o técnico autenticado na finalização
+        boolean isBeingCompleted = openTicket.status() == OpenTicketStatus.COMPLETED
+                && updatedOpenTicket.getStatus() != OpenTicketStatus.COMPLETED;
+
+        if(isBeingCompleted){
+            updatedOpenTicket.setFinishedBy(this.technicianService.findAuthenticated());
+        } else if(openTicket.status() == OpenTicketStatus.IN_PROGRESS){
+            updatedOpenTicket.setFinishedBy(null);
+        }
+
         updatedOpenTicket.setIdChamado(openTicket.idChamado());
         updatedOpenTicket.setStatus(openTicket.status());
         updatedOpenTicket.setIncident(openTicket.incident());
@@ -98,8 +106,6 @@ public class OpenTicketService {
         updatedOpenTicket.setEndDate(openTicket.endDate());
         updatedOpenTicket.setEndTime(openTicket.endTime());
         updatedOpenTicket.setObservations(openTicket.observations());
-
-        updatedOpenTicket.setTechnician(technician);
         updatedOpenTicket.setEquipment(equipment);
 
         this.openTicketRepository.save(updatedOpenTicket);

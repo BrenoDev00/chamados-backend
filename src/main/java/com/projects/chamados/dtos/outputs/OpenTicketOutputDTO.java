@@ -21,7 +21,11 @@ public record OpenTicketOutputDTO(
         LocalTime startTime,
         LocalDate endDate,
         LocalTime endTime,
-        String observations
+        String observations,
+        UUID openedById,
+        String openedByName,
+        UUID finishedById,
+        String finishedByName
 ) {
     public OpenTicketOutputDTO(OpenTicket openTicket){
         this(
@@ -37,7 +41,11 @@ public record OpenTicketOutputDTO(
                 openTicket.getStartTime(),
                 openTicket.getEndDate(),
                 openTicket.getEndTime(),
-                openTicket.getObservations()
+                openTicket.getObservations(),
+                openTicket.getOpenedBy().getId(),
+                openTicket.getOpenedBy().getName(),
+                openTicket.getFinishedBy() != null ? openTicket.getFinishedBy().getId() : null,
+                openTicket.getFinishedBy() != null ? openTicket.getFinishedBy().getName() : null
         );
     }
 }

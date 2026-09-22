@@ -7,6 +7,7 @@ import com.projects.chamados.models.Technician;
 import com.projects.chamados.repositories.TechnicianRepository;
 import com.projects.chamados.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,6 +23,14 @@ public class TechnicianService implements UserDetailsService {
 
     public Technician findIfExists(UUID technicianId){
         return this.technicianRepository.findById(technicianId).orElseThrow(() -> new NotFoundException(Constants.TECHNICIAN_NOT_FOUND));
+    }
+
+    // procura o técnico autenticado na requisição atual com base no e-mail do token
+    public Technician findAuthenticated(){
+        var email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        return this.technicianRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException(Constants.TECHNICIAN_NOT_FOUND));
     }
 
     public List<TechnicianOutputDTO> listAll(){
