@@ -2,6 +2,7 @@ package com.projects.chamados.services;
 
 import com.projects.chamados.dtos.inputs.TechnicianInputDTO;
 import com.projects.chamados.dtos.outputs.TechnicianOutputDTO;
+import com.projects.chamados.exceptions.ConflictException;
 import com.projects.chamados.exceptions.NotFoundException;
 import com.projects.chamados.models.Technician;
 import com.projects.chamados.repositories.TechnicianRepository;
@@ -39,6 +40,10 @@ public class TechnicianService implements UserDetailsService {
 
     public TechnicianOutputDTO updateById(UUID technicianId, TechnicianInputDTO technician){
         Technician updatedTechnician =  this.findIfExists(technicianId);
+
+        if(this.technicianRepository.existsByEmailIgnoreCaseAndIdNot(technician.email(), technicianId)){
+            throw new ConflictException(Constants.TECHNICIAN_EMAIL_ALREADY_EXISTS);
+        }
 
        updatedTechnician.setName(technician.name());
        updatedTechnician.setEmail(technician.email());

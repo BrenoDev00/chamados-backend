@@ -1,5 +1,6 @@
 package com.projects.chamados.config;
 
+import com.projects.chamados.exceptions.NotFoundException;
 import com.projects.chamados.services.TechnicianService;
 import com.projects.chamados.services.TokenService;
 import jakarta.servlet.FilterChain;
@@ -30,11 +31,15 @@ public class SecurityFilter extends OncePerRequestFilter {
             var technicianEmail = this.tokenService.validateAccessToken(token);
 
             if(technicianEmail != null){
-                var technician = this.technicianService.loadUserByUsername(technicianEmail);
+                try{
+                    var technician = this.technicianService.loadUserByUsername(technicianEmail);
 
-                var authentication = new UsernamePasswordAuthenticationToken(technician, null, technician.getAuthorities());
+                    var authentication = new UsernamePasswordAuthenticationToken(technician, null, technician.getAuthorities());
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }catch(NotFoundException exception){
+                    // token de um e-mail que não existe mais (ex.: técnico alterou o próprio e-mail): segue sem autenticação e a requisição recebe 401
+                }
             }
         }
 
