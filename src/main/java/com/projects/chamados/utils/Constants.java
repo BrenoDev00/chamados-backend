@@ -6,6 +6,7 @@ public class Constants {
     public static final String OPEN_TICKET_NOT_FOUND = "Chamado não encontrado.";
     public static final String ID_CHAMADO_ALREADY_EXISTS = "Já existe um chamado com o ID cadastrado.";
     public static final String CHECK_THE_END_DATE_AND_END_TIME_FIELDS = "Verifique os campos de Data fim e Hora fim.";
+    public static final String DUPLICATE_RECORD = "Já existe um registro com os dados informados.";
     public static final String INVALID_CREDENTIALS = "Credenciais inválidas.";
     public static final String ID_SEFIT_ALREADY_EXISTS = "Já existe um equipamento com o ID Sefit informado.";
     public static final String TECHNICIAN_EMAIL_ALREADY_EXISTS = "Já existe um técnico com o e-mail informado.";

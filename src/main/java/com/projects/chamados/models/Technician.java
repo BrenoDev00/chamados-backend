@@ -15,6 +15,7 @@ public class Technician {
     @GeneratedValue
     private UUID id;
     private String name;
+    @Column(unique = true)
     private String email;
     private TechnicianShift shift;
     private String password;

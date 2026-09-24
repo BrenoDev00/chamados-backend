@@ -30,7 +30,7 @@ public class TechnicianService implements UserDetailsService {
     public Technician findAuthenticated(){
         var email = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        return this.technicianRepository.findByEmail(email)
+        return this.technicianRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new NotFoundException(Constants.TECHNICIAN_NOT_FOUND));
     }
 
@@ -56,7 +56,7 @@ public class TechnicianService implements UserDetailsService {
     @Override
     // procura o técnico que está autenticando com base no seu e-mail
     public UserDetails loadUserByUsername(String email){
-        Technician technician = this.technicianRepository.findByEmail(email)
+        Technician technician = this.technicianRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new NotFoundException(Constants.TECHNICIAN_NOT_FOUND));
 
         return User.withUsername(technician.getEmail())

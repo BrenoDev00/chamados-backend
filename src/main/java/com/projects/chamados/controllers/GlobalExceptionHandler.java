@@ -3,7 +3,9 @@ package com.projects.chamados.controllers;
 import com.projects.chamados.exceptions.ApplicationException;
 import com.projects.chamados.utils.ApplicationErrorResponse;
 import com.projects.chamados.utils.InputValidationErrorResponse;
+import com.projects.chamados.utils.Constants;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -17,6 +19,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ApplicationException.class)
     public ResponseEntity<ApplicationErrorResponse> handleException(ApplicationException exception, HttpServletRequest request){
         var applicationErrorResponse = new ApplicationErrorResponse(exception.getMessage(), exception.getHttpStatus());
+
+        return ResponseEntity.status(applicationErrorResponse.getHttpStatus()).body(applicationErrorResponse);
+    }
+
+    // violação de constraint única no banco (ex.: requisições simultâneas que passaram pela validação do service)
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApplicationErrorResponse> handleDataIntegrityViolationException(DataIntegrityViolationException exception, HttpServletRequest request){
+        var applicationErrorResponse = new ApplicationErrorResponse(Constants.DUPLICATE_RECORD, HttpStatus.CONFLICT);
 
         return ResponseEntity.status(applicationErrorResponse.getHttpStatus()).body(applicationErrorResponse);
     }

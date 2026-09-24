@@ -21,7 +21,7 @@ public interface TechnicianRepository extends JpaRepository<Technician, UUID> {
            """)
     List<TechnicianOutputDTO> findAllWithoutPassword();
 
-   Optional<Technician> findByEmail(String email);
+   Optional<Technician> findByEmailIgnoreCase(String email);
 
    Boolean existsByEmailIgnoreCaseAndIdNot(String email, UUID id);
 }

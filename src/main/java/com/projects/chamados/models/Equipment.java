@@ -14,7 +14,7 @@ public class Equipment {
     @GeneratedValue
     private UUID id;
     private String location;
-    @Column(name="id_sefit")
+    @Column(name="id_sefit", unique = true)
     private String idSefit;
     private EquipmentType type;
     @Column(name="serial_number")
