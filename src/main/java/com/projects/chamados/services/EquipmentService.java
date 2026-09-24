@@ -3,6 +3,7 @@ package com.projects.chamados.services;
 import com.projects.chamados.dtos.inputs.EquipmentInputDTO;
 import com.projects.chamados.dtos.outputs.EquipmentListOutputDTO;
 import com.projects.chamados.dtos.outputs.EquipmentOutputDTO;
+import com.projects.chamados.exceptions.ConflictException;
 import com.projects.chamados.exceptions.NotFoundException;
 import com.projects.chamados.models.Equipment;
 import com.projects.chamados.models.Technician;
@@ -35,6 +36,10 @@ public class EquipmentService {
     }
 
     public EquipmentOutputDTO create(EquipmentInputDTO equipment){
+        if(this.equipmentRepository.existsByIdSefitIgnoreCase(equipment.idSefit())){
+            throw new ConflictException(Constants.ID_SEFIT_ALREADY_EXISTS);
+        }
+
         this.technicianService.findIfExists(equipment.technicianId());
 
         var createdEquipment = new Equipment();
@@ -54,6 +59,11 @@ public class EquipmentService {
 
     public EquipmentOutputDTO updateById(UUID equipmentId, EquipmentInputDTO equipment){
         this.findIfExists(equipmentId);
+
+        if(this.equipmentRepository.existsByIdSefitIgnoreCaseAndIdNot(equipment.idSefit(), equipmentId)){
+            throw new ConflictException(Constants.ID_SEFIT_ALREADY_EXISTS);
+        }
+
         this.technicianService.findIfExists(equipment.technicianId());
 
         var updatedEquipment = new Equipment();

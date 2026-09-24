@@ -8,4 +8,8 @@ import java.util.UUID;
 
 public interface EquipmentRepository extends JpaRepository<Equipment, UUID> {
     List<Equipment> findByLocationContainingIgnoreCaseOrIdSefitContainingIgnoreCase(String location, String idSefit);
+
+    Boolean existsByIdSefitIgnoreCase(String idSefit);
+
+    Boolean existsByIdSefitIgnoreCaseAndIdNot(String idSefit, UUID id);
 }
