@@ -27,7 +27,7 @@ public class EquipmentController {
     @Autowired
     private EquipmentService equipmentService;
 
-    @Operation(description = "Lista todos os equipamentos ou equipamento com base na pesquisa.")
+    @Operation(description = "Lista todos os equipamentos com paginação ou equipamento com base na pesquisa.")
     @ApiResponse(responseCode = "200")
     @GetMapping
     public ResponseEntity<EquipmentListOutputDTO> getAllBySearch(
