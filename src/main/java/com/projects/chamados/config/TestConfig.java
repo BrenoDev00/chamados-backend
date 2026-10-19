@@ -49,10 +49,12 @@ public class TestConfig implements CommandLineRunner {
         var openTicketOne = new OpenTicket(null, "1", OpenTicketStatus.COMPLETED, "Equipamento off-line", LocalDate.now(), LocalTime.now(), LocalDate.now().plusDays(2), LocalTime.now(), null, John, John, equipmentOne);
         var openTicketTwo = new OpenTicket(null, "22", OpenTicketStatus.IN_PROGRESS, "Equipamento vandalizado", LocalDate.now(), LocalTime.now(), null, null, "Vandalizado.", Marie, null, equipmentTwo);
         var openTicketThree = new OpenTicket(null, "67", OpenTicketStatus.COMPLETED, "Equipamento off-line", LocalDate.now(), LocalTime.now(), LocalDate.now().plusDays(2), LocalTime.now(), null, Paul, Paul, equipmentThree);
+        var openTicketFour = new OpenTicket(null, "98", OpenTicketStatus.COMPLETED, "Equipamento off-line", LocalDate.now(), LocalTime.now(), LocalDate.now().plusDays(2), LocalTime.now(), null, Marie, Paul, equipmentTwo);
+        var openTicketFive = new OpenTicket(null, "99", OpenTicketStatus.IN_PROGRESS, "Equipamento vandalizado", LocalDate.now(), LocalTime.now(), LocalDate.now().plusDays(2), LocalTime.now(), null, Paul, Marie, equipmentThree);
 
         // salvamento de entidades
         this.technicianRepository.saveAll(Arrays.asList(John, Marie, Andrew, Paul));
         this.equipmentRepository.saveAll(Arrays.asList(equipmentOne, equipmentTwo, equipmentThree));
-        this.openTicketRepository.saveAll(Arrays.asList(openTicketOne, openTicketTwo, openTicketThree));
+        this.openTicketRepository.saveAll(Arrays.asList(openTicketOne, openTicketTwo, openTicketThree, openTicketFour, openTicketFive));
     }
 }

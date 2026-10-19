@@ -10,6 +10,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,13 +27,14 @@ public class OpenTicketController {
     @Autowired
     private OpenTicketService openTicketService;
 
-    @Operation(description = "Lista todos os chamados ou chamado com base na pesquisa.")
+    @Operation(description = "Lista todos os chamados com paginação ou chamado com base na pesquisa.")
     @ApiResponse(responseCode = "200")
     @GetMapping
     public ResponseEntity<List<OpenTicketOutputDTO>> getAllBySearch(
-            @RequestParam(required = true) String searchTerm
+            @RequestParam(required = true) String searchTerm,
+            @PageableDefault(size = 15) Pageable pageable
     ){
-        var openTickets = this.openTicketService.listAllBySearch(searchTerm);
+        var openTickets = this.openTicketService.listAllBySearch(searchTerm, pageable).getContent();
 
         return ResponseEntity.ok().body(openTickets);
     }
