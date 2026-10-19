@@ -32,7 +32,7 @@ public class OpenTicketController {
     @GetMapping
     public ResponseEntity<List<OpenTicketOutputDTO>> getAllBySearch(
             @RequestParam(required = true) String searchTerm,
-            @PageableDefault(size = 15) Pageable pageable
+            @PageableDefault(size = 20) Pageable pageable
     ){
         var openTickets = this.openTicketService.listAllBySearch(searchTerm, pageable).getContent();
 

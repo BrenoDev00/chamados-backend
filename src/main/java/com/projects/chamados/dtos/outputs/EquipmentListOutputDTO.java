@@ -1,12 +1,14 @@
 package com.projects.chamados.dtos.outputs;
 
+import org.springframework.data.domain.Page;
+
 import java.util.List;
 
 public record EquipmentListOutputDTO(
-        Integer total,
+        Long total,
         List<EquipmentOutputDTO> items
 ) {
-    public EquipmentListOutputDTO(List<EquipmentOutputDTO> equipments){
-        this(equipments.size(), equipments);
+    public EquipmentListOutputDTO(Page<EquipmentOutputDTO> equipments){
+        this(equipments.getTotalElements(), equipments.getContent());
     }
 }
