@@ -11,6 +11,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,13 +27,14 @@ public class EquipmentController {
     @Autowired
     private EquipmentService equipmentService;
 
-    @Operation(description = "Lista todos os equipamentos ou equipamento com base na pesquisa.")
+    @Operation(description = "Lista todos os equipamentos com paginação ou equipamento com base na pesquisa.")
     @ApiResponse(responseCode = "200")
     @GetMapping
     public ResponseEntity<EquipmentListOutputDTO> getAllBySearch(
-            @RequestParam(required = true) String searchTerm
-    ){
-        var equipments = this.equipmentService.listAllBySearch(searchTerm);
+            @RequestParam(required = true) String searchTerm,
+            @PageableDefault(size = 30) Pageable pageable
+            ){
+        var equipments = this.equipmentService.listAllBySearch(searchTerm, pageable);
 
         return ResponseEntity.ok().body(equipments);
     }

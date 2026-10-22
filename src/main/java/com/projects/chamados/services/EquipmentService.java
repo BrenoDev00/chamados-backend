@@ -10,6 +10,7 @@ import com.projects.chamados.models.Technician;
 import com.projects.chamados.repositories.EquipmentRepository;
 import com.projects.chamados.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -23,14 +24,14 @@ public class EquipmentService {
     private TechnicianService technicianService;
 
     public Equipment findIfExists(UUID equipmentId){
-       return this.equipmentRepository.findById(equipmentId).orElseThrow(() -> new NotFoundException(Constants.EQUIPMENT_NOT_FOUND));
+       return this.equipmentRepository.findById(equipmentId)
+               .orElseThrow(() -> new NotFoundException(Constants.EQUIPMENT_NOT_FOUND));
     }
 
-    public EquipmentListOutputDTO listAllBySearch(String searchTerm){
-        var equipmentList = this.equipmentRepository.findByLocationContainingIgnoreCaseOrIdSefitContainingIgnoreCase(searchTerm, searchTerm)
-                .stream()
-                .map(equipment -> new EquipmentOutputDTO(equipment))
-                .toList();
+    public EquipmentListOutputDTO listAllBySearch(String searchTerm, Pageable pageable){
+        var equipmentList = this.equipmentRepository
+                .findByLocationContainingIgnoreCaseOrIdSefitContainingIgnoreCase(searchTerm, searchTerm, pageable)
+                .map(equipment -> new EquipmentOutputDTO(equipment));
 
         return new EquipmentListOutputDTO(equipmentList);
     }

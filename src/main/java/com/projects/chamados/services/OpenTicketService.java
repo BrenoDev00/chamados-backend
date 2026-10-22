@@ -10,11 +10,12 @@ import com.projects.chamados.models.OpenTicket;
 import com.projects.chamados.repositories.OpenTicketRepository;
 import com.projects.chamados.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -45,10 +46,10 @@ public class OpenTicketService {
         if(isInvalid) throw new BadRequestException(Constants.CHECK_THE_END_DATE_AND_END_TIME_FIELDS);
     }
 
-    public List<OpenTicketOutputDTO> listAllBySearch (String searchTerm){
-        return this.openTicketRepository.findByIdChamadoContainingIgnoreCaseOrEquipment_IdSefitContainingIgnoreCaseOrderByIdChamadoDesc(searchTerm, searchTerm)
-                .stream()
-                .map(openTicket -> new OpenTicketOutputDTO(openTicket)).toList();
+    public Page<OpenTicketOutputDTO> listAllBySearch (String searchTerm, Pageable pageable){
+        return this.openTicketRepository
+                .findByIdChamadoContainingIgnoreCaseOrEquipment_IdSefitContainingIgnoreCaseOrderByIdChamadoDesc(searchTerm, searchTerm, pageable)
+                .map(openTicket -> new OpenTicketOutputDTO(openTicket));
     }
 
     public OpenTicketOutputDTO create(OpenTicketInputDTO openTicket){
