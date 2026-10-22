@@ -32,7 +32,7 @@ public class EquipmentController {
     @GetMapping
     public ResponseEntity<EquipmentListOutputDTO> getAllBySearch(
             @RequestParam(required = true) String searchTerm,
-            @PageableDefault(size = 30) Pageable pageable
+            @PageableDefault(size = 30, sort = "location") Pageable pageable
             ){
         var equipments = this.equipmentService.listAllBySearch(searchTerm, pageable);
 

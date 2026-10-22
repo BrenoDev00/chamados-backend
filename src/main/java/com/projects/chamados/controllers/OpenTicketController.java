@@ -1,6 +1,7 @@
 package com.projects.chamados.controllers;
 
 import com.projects.chamados.dtos.inputs.OpenTicketInputDTO;
+import com.projects.chamados.dtos.outputs.OpenTicketListOutputDTO;
 import com.projects.chamados.dtos.outputs.OpenTicketOutputDTO;
 import com.projects.chamados.services.OpenTicketService;
 import com.projects.chamados.utils.Constants;
@@ -16,7 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -30,11 +30,11 @@ public class OpenTicketController {
     @Operation(description = "Lista todos os chamados com paginação ou chamado com base na pesquisa.")
     @ApiResponse(responseCode = "200")
     @GetMapping
-    public ResponseEntity<List<OpenTicketOutputDTO>> getAllBySearch(
+    public ResponseEntity<OpenTicketListOutputDTO> getAllBySearch(
             @RequestParam(required = true) String searchTerm,
             @PageableDefault(size = 20) Pageable pageable
     ){
-        var openTickets = this.openTicketService.listAllBySearch(searchTerm, pageable).getContent();
+        var openTickets = new OpenTicketListOutputDTO(this.openTicketService.listAllBySearch(searchTerm, pageable));
 
         return ResponseEntity.ok().body(openTickets);
     }
