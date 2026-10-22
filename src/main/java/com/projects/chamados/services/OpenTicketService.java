@@ -1,6 +1,7 @@
 package com.projects.chamados.services;
 
 import com.projects.chamados.dtos.inputs.OpenTicketInputDTO;
+import com.projects.chamados.dtos.outputs.OpenTicketListOutputDTO;
 import com.projects.chamados.dtos.outputs.OpenTicketOutputDTO;
 import com.projects.chamados.enums.OpenTicketStatus;
 import com.projects.chamados.exceptions.BadRequestException;
@@ -27,32 +28,34 @@ public class OpenTicketService {
     @Autowired
     private TechnicianService technicianService;
 
-    private OpenTicket findIfExists(UUID openTicketId){
+    private OpenTicket findIfExists(UUID openTicketId) {
         return this.openTicketRepository.findById(openTicketId).orElseThrow(() -> new NotFoundException(Constants.OPEN_TICKET_NOT_FOUND));
     }
 
-    private void findIfIdChamadoAlreadyExists(String idChamado){
-        boolean exists =  this.openTicketRepository.existsByIdChamado(idChamado);
+    private void findIfIdChamadoAlreadyExists(String idChamado) {
+        boolean exists = this.openTicketRepository.existsByIdChamado(idChamado);
 
-        if(exists) throw new ConflictException(Constants.ID_CHAMADO_ALREADY_EXISTS);
+        if (exists) throw new ConflictException(Constants.ID_CHAMADO_ALREADY_EXISTS);
     }
 
-    private void validateEndDateAndEndTimeFieldsByOpenTicketStatus(LocalDate endDate, LocalTime endTime, OpenTicketStatus opentTicketStatus){
+    private void validateEndDateAndEndTimeFieldsByOpenTicketStatus(LocalDate endDate, LocalTime endTime, OpenTicketStatus opentTicketStatus) {
         boolean endDateOrEndTimeIsNull = endDate == null || endTime == null;
         boolean endDateOrEndTimeIsNotNull = endDate != null || endTime != null;
 
         boolean isInvalid = (endDateOrEndTimeIsNull && opentTicketStatus == OpenTicketStatus.COMPLETED) || (endDateOrEndTimeIsNotNull && opentTicketStatus == OpenTicketStatus.IN_PROGRESS);
 
-        if(isInvalid) throw new BadRequestException(Constants.CHECK_THE_END_DATE_AND_END_TIME_FIELDS);
+        if (isInvalid) throw new BadRequestException(Constants.CHECK_THE_END_DATE_AND_END_TIME_FIELDS);
     }
 
-    public Page<OpenTicketOutputDTO> listAllBySearch (String searchTerm, Pageable pageable){
-        return this.openTicketRepository
+    public OpenTicketListOutputDTO listAllBySearch(String searchTerm, Pageable pageable) {
+        var openTicketList = this.openTicketRepository
                 .findByIdChamadoContainingIgnoreCaseOrEquipment_IdSefitContainingIgnoreCaseOrderByIdChamadoDesc(searchTerm, searchTerm, pageable)
                 .map(openTicket -> new OpenTicketOutputDTO(openTicket));
+
+        return new OpenTicketListOutputDTO(openTicketList);
     }
 
-    public OpenTicketOutputDTO create(OpenTicketInputDTO openTicket){
+    public OpenTicketOutputDTO create(OpenTicketInputDTO openTicket) {
         this.findIfIdChamadoAlreadyExists(openTicket.idChamado());
         this.validateEndDateAndEndTimeFieldsByOpenTicketStatus(openTicket.endDate(), openTicket.endTime(), openTicket.status());
 
@@ -78,10 +81,10 @@ public class OpenTicketService {
         return new OpenTicketOutputDTO(createdOpenTicket);
     }
 
-    public OpenTicketOutputDTO updateById(UUID openTicketId, OpenTicketInputDTO openTicket){
+    public OpenTicketOutputDTO updateById(UUID openTicketId, OpenTicketInputDTO openTicket) {
         var updatedOpenTicket = this.findIfExists(openTicketId);
 
-        if(!updatedOpenTicket.getIdChamado().equals(openTicket.idChamado())){
+        if (!updatedOpenTicket.getIdChamado().equals(openTicket.idChamado())) {
             this.findIfIdChamadoAlreadyExists(openTicket.idChamado());
         }
 
@@ -93,9 +96,9 @@ public class OpenTicketService {
         boolean isBeingCompleted = openTicket.status() == OpenTicketStatus.COMPLETED
                 && updatedOpenTicket.getStatus() != OpenTicketStatus.COMPLETED;
 
-        if(isBeingCompleted){
+        if (isBeingCompleted) {
             updatedOpenTicket.setFinishedBy(this.technicianService.findAuthenticated());
-        } else if(openTicket.status() == OpenTicketStatus.IN_PROGRESS){
+        } else if (openTicket.status() == OpenTicketStatus.IN_PROGRESS) {
             updatedOpenTicket.setFinishedBy(null);
         }
 
@@ -114,7 +117,7 @@ public class OpenTicketService {
         return new OpenTicketOutputDTO(updatedOpenTicket);
     }
 
-    public void deleteById(UUID openTicketId){
+    public void deleteById(UUID openTicketId) {
         this.findIfExists(openTicketId);
 
         this.openTicketRepository.deleteById(openTicketId);

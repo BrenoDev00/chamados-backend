@@ -33,8 +33,8 @@ public class OpenTicketController {
     public ResponseEntity<OpenTicketListOutputDTO> getAllBySearch(
             @RequestParam(required = true) String searchTerm,
             @PageableDefault(size = 20) Pageable pageable
-    ){
-        var openTickets = new OpenTicketListOutputDTO(this.openTicketService.listAllBySearch(searchTerm, pageable));
+    ) {
+        var openTickets = this.openTicketService.listAllBySearch(searchTerm, pageable);
 
         return ResponseEntity.ok().body(openTickets);
     }
@@ -42,7 +42,7 @@ public class OpenTicketController {
     @Operation(description = "Cadastra novo chamado.")
     @ApiResponse(responseCode = "201")
     @PostMapping
-    public ResponseEntity<OpenTicketOutputDTO> post(@RequestBody @Valid OpenTicketInputDTO openTicket){
+    public ResponseEntity<OpenTicketOutputDTO> post(@RequestBody @Valid OpenTicketInputDTO openTicket) {
         var createdOpenTicket = this.openTicketService.create(openTicket);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(createdOpenTicket);
@@ -51,7 +51,7 @@ public class OpenTicketController {
     @Operation(description = "Atualiza chamado.")
     @ApiResponse(responseCode = "200")
     @PutMapping(value = "/{openTicketId}")
-    public ResponseEntity<OpenTicketOutputDTO> put(@PathVariable UUID openTicketId, @RequestBody @Valid OpenTicketInputDTO openTicket){
+    public ResponseEntity<OpenTicketOutputDTO> put(@PathVariable UUID openTicketId, @RequestBody @Valid OpenTicketInputDTO openTicket) {
         var updatedOpenTicket = this.openTicketService.updateById(openTicketId, openTicket);
 
         return ResponseEntity.ok().body(updatedOpenTicket);
@@ -60,7 +60,7 @@ public class OpenTicketController {
     @Operation(description = "Exclui chamado.")
     @ApiResponse(responseCode = "204")
     @DeleteMapping(value = "/{openTicketId}")
-    public ResponseEntity<Void> delete(@PathVariable UUID openTicketId){
+    public ResponseEntity<Void> delete(@PathVariable UUID openTicketId) {
         this.openTicketService.deleteById(openTicketId);
 
         return ResponseEntity.noContent().build();
