@@ -129,6 +129,8 @@ public class TechnicianServiceTest {
 
     @Test
     public void updateByIdThrowsExceptionEmailAlreadyExists(){
+        when(this.technicianRepository.findById(TECHNICIAN_ID)).thenReturn(Optional.of(TECHNICIAN_ONE));
+
         when(this.technicianRepository.existsByEmailIgnoreCaseAndIdNot(TECHNICIAN_ONE.getEmail(), TECHNICIAN_ID))
                 .thenReturn(true);
 
