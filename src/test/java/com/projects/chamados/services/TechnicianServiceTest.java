@@ -2,11 +2,15 @@ package com.projects.chamados.services;
 
 import com.projects.chamados.exceptions.NotFoundException;
 import com.projects.chamados.repositories.TechnicianRepository;
+import com.projects.chamados.utils.Constants;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Optional;
 
@@ -23,6 +27,17 @@ public class TechnicianServiceTest {
     @Mock
     private TechnicianRepository technicianRepository;
 
+    @AfterEach
+    public void clearSecurityContext(){
+        SecurityContextHolder.clearContext();
+    }
+
+    private void authenticateTechnician(String email){
+        var auth = new UsernamePasswordAuthenticationToken(email, null, null);
+
+        SecurityContextHolder.getContext().setAuthentication(auth);
+    }
+
     @Test
     public void findIfExists(){
         when(this.technicianRepository.findById(TECHNICIAN_ID))
@@ -36,16 +51,17 @@ public class TechnicianServiceTest {
     @Test
     public void findIfExistsThrowsException(){
         when(this.technicianRepository.findById(TECHNICIAN_ID))
-                .thenThrow(NotFoundException.class);
+                .thenReturn(Optional.empty());
 
-        assertThatThrownBy(() ->
-                this.technicianService.findIfExists(TECHNICIAN_ID)
-        ).isInstanceOf(NotFoundException.class);
+        assertThatThrownBy(() -> this.technicianService.findIfExists(TECHNICIAN_ID))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage(Constants.TECHNICIAN_NOT_FOUND);
     }
 
     @Test
-    public void findExistentTechnicianByEmail(){
+    public void findAuthenticated(){
         String technicianEmail = TECHNICIAN_ONE.getEmail();
+        this.authenticateTechnician(technicianEmail);
 
         when(this.technicianRepository.findByEmailIgnoreCase(technicianEmail))
                 .thenReturn(Optional.of(TECHNICIAN_ONE));
@@ -56,15 +72,16 @@ public class TechnicianServiceTest {
     }
 
     @Test
-    public void findInexistentTechnicianByEmail(){
+    public void findAuthenticatedThrowsException(){
         String technicianEmail = TECHNICIAN_ONE.getEmail();
+        this.authenticateTechnician(technicianEmail);
 
         when(this.technicianRepository.findByEmailIgnoreCase(technicianEmail))
-                .thenThrow(NotFoundException.class);
+                .thenReturn(Optional.empty());
 
-        assertThatThrownBy(() ->
-                this.technicianService.findAuthenticated()
-        ).isInstanceOf(NotFoundException.class);
+        assertThatThrownBy(() -> this.technicianService.findAuthenticated())
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage(Constants.TECHNICIAN_NOT_FOUND);
     }
 
     @Test
