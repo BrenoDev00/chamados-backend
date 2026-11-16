@@ -1,5 +1,8 @@
 package com.projects.chamados.services;
 
+import com.projects.chamados.dtos.inputs.TechnicianInputDTO;
+import com.projects.chamados.dtos.outputs.TechnicianOutputDTO;
+import com.projects.chamados.exceptions.ConflictException;
 import com.projects.chamados.exceptions.NotFoundException;
 import com.projects.chamados.repositories.TechnicianRepository;
 import com.projects.chamados.utils.Constants;
@@ -92,6 +95,46 @@ public class TechnicianServiceTest {
         var technicianList = this.technicianService.listAll();
 
         assertThat(technicianList).isEqualTo(TECHNICIAN_LIST);
+    }
+
+    @Test
+    public void updateById(){
+        when(this.technicianRepository.findById(TECHNICIAN_ID)).thenReturn(Optional.of(TECHNICIAN_ONE));
+
+        var updatedTechnician = TECHNICIAN_ONE;
+
+        updatedTechnician.setName(TECHNICIAN_TWO.getName());
+        updatedTechnician.setEmail(TECHNICIAN_TWO.getEmail());
+        updatedTechnician.setShift(TECHNICIAN_TWO.getShift());
+
+        this.technicianRepository.save(updatedTechnician);
+
+       var technicianOutputDTO = this.technicianService
+                .updateById(TECHNICIAN_ID, new TechnicianInputDTO(TECHNICIAN_TWO.getName(), TECHNICIAN_TWO.getEmail(), TECHNICIAN_TWO.getShift()));
+
+        assertThat(technicianOutputDTO)
+                .isEqualTo(new TechnicianOutputDTO(TECHNICIAN_TWO));
+    }
+
+    @Test
+    public void updateByIdThrowsException(){
+        when(this.technicianRepository.findById(TECHNICIAN_ID))
+                .thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> this.technicianService
+                .updateById(TECHNICIAN_ID, new TechnicianInputDTO(TECHNICIAN_ONE.getName(), TECHNICIAN_ONE.getEmail(), TECHNICIAN_ONE.getShift())))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage(Constants.TECHNICIAN_NOT_FOUND);
+    }
+
+    @Test
+    public void updateByIdThrowsExceptionEmailAlreadyExists(){
+        when(this.technicianRepository.existsByEmailIgnoreCaseAndIdNot(TECHNICIAN_ONE.getEmail(), TECHNICIAN_ID))
+                .thenReturn(true);
+
+        assertThatThrownBy(() -> this.technicianService.updateById(TECHNICIAN_ID, new TechnicianInputDTO(TECHNICIAN_ONE.getName(), TECHNICIAN_ONE.getEmail(), TECHNICIAN_ONE.getShift())))
+                .isInstanceOf(ConflictException.class)
+                .hasMessage(Constants.TECHNICIAN_EMAIL_ALREADY_EXISTS);
     }
 
    @Test
