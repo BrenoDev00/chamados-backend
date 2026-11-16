@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 
 import java.util.Optional;
 
@@ -93,6 +94,29 @@ public class TechnicianServiceTest {
         assertThat(technicianList).isEqualTo(TECHNICIAN_LIST);
     }
 
-   //fazer testes dos métodos updateById e loadUserByUsername
+   @Test
+    public void loadUserByUsername(){
+        when(this.technicianRepository.findByEmailIgnoreCase(TECHNICIAN_ONE.getEmail()))
+                .thenReturn(Optional.of(TECHNICIAN_ONE));
 
+       User.withUsername(TECHNICIAN_ONE.getEmail())
+               .password(TECHNICIAN_ONE.getPassword())
+               .build();
+
+        var userDetails = this.technicianService.loadUserByUsername(TECHNICIAN_ONE.getEmail());
+
+        assertThat(userDetails.getUsername()).isEqualTo(TECHNICIAN_ONE.getEmail());
+
+        assertThat(userDetails.getPassword()).isEqualTo(TECHNICIAN_ONE.getPassword());
+    }
+
+    @Test
+    public void loadUserByUsernameThrowsException(){
+        when(this.technicianRepository.findByEmailIgnoreCase(TECHNICIAN_ONE.getEmail()))
+                .thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> this.technicianService.loadUserByUsername(TECHNICIAN_ONE.getEmail()))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage(Constants.TECHNICIAN_NOT_FOUND);
+    }
 }
