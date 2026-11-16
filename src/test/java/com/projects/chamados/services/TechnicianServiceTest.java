@@ -24,7 +24,7 @@ public class TechnicianServiceTest {
     private TechnicianRepository technicianRepository;
 
     @Test
-    public void findExistentTechnicianById(){
+    public void findIfExists(){
         when(this.technicianRepository.findById(TECHNICIAN_ID))
                 .thenReturn(Optional.of(TECHNICIAN_ONE));
 
@@ -34,7 +34,7 @@ public class TechnicianServiceTest {
     }
 
     @Test
-    public void findInexistentTechnicianById(){
+    public void findIfExistsThrowsException(){
         when(this.technicianRepository.findById(TECHNICIAN_ID))
                 .thenThrow(NotFoundException.class);
 
@@ -68,12 +68,12 @@ public class TechnicianServiceTest {
     }
 
     @Test
-    public void listAllTechnician(){
-        when(technicianRepository.findAllWithoutPassword()).thenReturn(TECHNICIAN_LIST_MOCK);
+    public void listAll(){
+        when(technicianRepository.findAllWithoutPassword()).thenReturn(TECHNICIAN_LIST);
 
         var technicianList = this.technicianService.listAll();
 
-        assertThat(technicianList).isEqualTo(TECHNICIAN_LIST_MOCK);
+        assertThat(technicianList).isEqualTo(TECHNICIAN_LIST);
     }
 
    //fazer testes dos métodos updateById e loadUserByUsername
