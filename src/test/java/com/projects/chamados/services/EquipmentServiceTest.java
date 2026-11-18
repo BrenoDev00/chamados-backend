@@ -18,8 +18,7 @@ import java.util.Optional;
 
 import static com.projects.chamados.constants.EquipmentConstants.EQUIPMENT_ID;
 import static com.projects.chamados.constants.EquipmentConstants.EQUIPMENT_ONE;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -79,5 +78,14 @@ public class EquipmentServiceTest {
 
         assertThat(equipmentList.total()).isEqualTo(0);
         assertThat(equipmentList.items().size()).isEqualTo(0);
+    }
+
+    @Test
+    public void deleteById(){
+        when(this.equipmentRepository.findById(EQUIPMENT_ID))
+                .thenReturn(Optional.of(EQUIPMENT_ONE));
+
+        assertThatCode(() ->
+                this.equipmentService.deleteById(EQUIPMENT_ID)).doesNotThrowAnyException();
     }
 }
