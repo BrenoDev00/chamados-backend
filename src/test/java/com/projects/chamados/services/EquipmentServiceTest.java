@@ -1,5 +1,6 @@
 package com.projects.chamados.services;
 
+import com.projects.chamados.dtos.outputs.EquipmentOutputDTO;
 import com.projects.chamados.exceptions.NotFoundException;
 import com.projects.chamados.models.Equipment;
 import com.projects.chamados.repositories.EquipmentRepository;
@@ -61,7 +62,7 @@ public class EquipmentServiceTest {
         var equipmentList = this.equipmentService.listAllBySearch(searchTerm, page);
 
         assertThat(equipmentList.total()).isEqualTo(1);
-        assertThat(equipmentList.items().getFirst()).isEqualTo(EQUIPMENT_ONE);
+        assertThat(equipmentList.items().getFirst()).isEqualTo(new EquipmentOutputDTO(EQUIPMENT_ONE));
         assertThat(equipmentList.items().size()).isEqualTo(1);
     }
 

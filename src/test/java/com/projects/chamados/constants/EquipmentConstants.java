@@ -7,5 +7,5 @@ import java.util.UUID;
 
 public class EquipmentConstants {
     public static final UUID EQUIPMENT_ID = UUID.randomUUID();
-    public static final Equipment EQUIPMENT_ONE = new Equipment(null, "BR 070 DF", "123abc", EquipmentType.WIM, "001ab", null);
+    public static final Equipment EQUIPMENT_ONE = new Equipment(null, "BR 070 DF", "123abc", EquipmentType.WIM, "001ab", TechnicianConstants.TECHNICIAN_ONE);
 }
