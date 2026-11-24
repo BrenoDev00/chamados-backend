@@ -1,9 +1,12 @@
 package com.projects.chamados.services;
 
+import com.projects.chamados.dtos.inputs.EquipmentInputDTO;
 import com.projects.chamados.dtos.outputs.EquipmentOutputDTO;
+import com.projects.chamados.exceptions.ConflictException;
 import com.projects.chamados.exceptions.NotFoundException;
 import com.projects.chamados.models.Equipment;
 import com.projects.chamados.repositories.EquipmentRepository;
+import com.projects.chamados.repositories.TechnicianRepository;
 import com.projects.chamados.utils.Constants;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,6 +22,7 @@ import java.util.Optional;
 
 import static com.projects.chamados.constants.EquipmentConstants.EQUIPMENT_ID;
 import static com.projects.chamados.constants.EquipmentConstants.EQUIPMENT_ONE;
+import static com.projects.chamados.constants.TechnicianConstants.TECHNICIAN_ONE;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -26,9 +30,14 @@ import static org.mockito.Mockito.when;
 public class EquipmentServiceTest {
     @InjectMocks
     private EquipmentService equipmentService;
+    @InjectMocks
+    private TechnicianService technicianService;
 
     @Mock
     private EquipmentRepository equipmentRepository;
+
+    @Mock
+    private TechnicianRepository technicianRepository;
 
     @Test
     public void findIfExists(){
@@ -64,6 +73,54 @@ public class EquipmentServiceTest {
         assertThat(equipmentList.total()).isEqualTo(1);
         assertThat(equipmentList.items().getFirst()).isEqualTo(new EquipmentOutputDTO(EQUIPMENT_ONE));
         assertThat(equipmentList.items().size()).isEqualTo(1);
+    }
+
+    @Test
+    public void create(){
+        when(this.technicianRepository.findById(EQUIPMENT_ONE.getTechnician().getId())).thenReturn(Optional.of(TECHNICIAN_ONE));
+        when(this.equipmentRepository.save(EQUIPMENT_ONE)).thenReturn(EQUIPMENT_ONE);
+
+        var createdEquipment = this.equipmentService.create(
+                new EquipmentInputDTO(EQUIPMENT_ONE.getLocation(), EQUIPMENT_ONE.getIdSefit(), EQUIPMENT_ONE.getType(), EQUIPMENT_ONE.getSerialNumber(), EQUIPMENT_ONE.getTechnician().getId())
+        );
+
+        assertThat(createdEquipment).isEqualTo(new EquipmentOutputDTO(EQUIPMENT_ONE));
+    }
+
+    @Test
+    public void createThrowsExceptionIdSefitAlreadyExists(){
+        when(this.equipmentRepository.existsByIdSefitIgnoreCase(EQUIPMENT_ONE.getIdSefit()))
+                .thenReturn(true);
+
+        assertThatThrownBy(() -> this.equipmentService.create(
+                new EquipmentInputDTO(EQUIPMENT_ONE.getLocation(), EQUIPMENT_ONE.getIdSefit(), EQUIPMENT_ONE.getType(), EQUIPMENT_ONE.getSerialNumber(), EQUIPMENT_ONE.getTechnician().getId())
+        ))
+                .isInstanceOf(ConflictException.class)
+                .hasMessage(Constants.ID_SEFIT_ALREADY_EXISTS);
+    }
+
+    @Test
+    public void updateById(){
+        when(this.technicianService.findIfExists(EQUIPMENT_ONE.getTechnician().getId()))
+                .thenReturn(EQUIPMENT_ONE.getTechnician());
+        when(this.equipmentRepository.save(EQUIPMENT_ONE)).thenReturn(EQUIPMENT_ONE);
+
+        var updatedEquipment = this.equipmentService
+                .updateById(EQUIPMENT_ID, new EquipmentInputDTO(EQUIPMENT_ONE.getLocation(), EQUIPMENT_ONE.getIdSefit(), EQUIPMENT_ONE.getType(), EQUIPMENT_ONE.getSerialNumber(), EQUIPMENT_ONE.getTechnician().getId())
+        );
+
+        assertThat(updatedEquipment).isEqualTo(new EquipmentOutputDTO(EQUIPMENT_ONE));
+    }
+
+    @Test
+    public void updateByIdThrowsExceptionIdSefitAlreadyExists(){
+        when(this.equipmentRepository.findById(EQUIPMENT_ID)).thenReturn(Optional.of(EQUIPMENT_ONE));
+        when(this.equipmentRepository.existsByIdSefitIgnoreCaseAndIdNot(EQUIPMENT_ONE.getIdSefit(), EQUIPMENT_ID))
+                .thenReturn(true);
+
+        assertThatThrownBy(() -> this.equipmentService.updateById(EQUIPMENT_ID, new EquipmentInputDTO(EQUIPMENT_ONE.getLocation(), EQUIPMENT_ONE.getIdSefit(), EQUIPMENT_ONE.getType(), EQUIPMENT_ONE.getSerialNumber(), EQUIPMENT_ONE.getTechnician().getId())))
+                .isInstanceOf(ConflictException.class)
+                .hasMessage(Constants.ID_SEFIT_ALREADY_EXISTS);
     }
 
     @Test
