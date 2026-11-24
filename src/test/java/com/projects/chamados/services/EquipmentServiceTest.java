@@ -6,7 +6,6 @@ import com.projects.chamados.exceptions.ConflictException;
 import com.projects.chamados.exceptions.NotFoundException;
 import com.projects.chamados.models.Equipment;
 import com.projects.chamados.repositories.EquipmentRepository;
-import com.projects.chamados.repositories.TechnicianRepository;
 import com.projects.chamados.utils.Constants;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +21,6 @@ import java.util.Optional;
 
 import static com.projects.chamados.constants.EquipmentConstants.EQUIPMENT_ID;
 import static com.projects.chamados.constants.EquipmentConstants.EQUIPMENT_ONE;
-import static com.projects.chamados.constants.TechnicianConstants.TECHNICIAN_ONE;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -30,14 +28,12 @@ import static org.mockito.Mockito.when;
 public class EquipmentServiceTest {
     @InjectMocks
     private EquipmentService equipmentService;
-    @InjectMocks
-    private TechnicianService technicianService;
 
     @Mock
     private EquipmentRepository equipmentRepository;
 
     @Mock
-    private TechnicianRepository technicianRepository;
+    private TechnicianService technicianService;
 
     @Test
     public void findIfExists(){
@@ -76,12 +72,36 @@ public class EquipmentServiceTest {
     }
 
     @Test
+    public void listAllBySearchReturnsEmptyPage(){
+        var searchTerm = "Inexistente";
+        var page = PageRequest.of(0, 10);
+
+        when(this.equipmentRepository
+                .findByLocationContainingIgnoreCaseOrIdSefitContainingIgnoreCase(searchTerm, searchTerm, page))
+                .thenReturn(Page.empty(page));
+
+        var equipmentList = this.equipmentService.listAllBySearch(searchTerm, page);
+
+        assertThat(equipmentList.total()).isEqualTo(0);
+        assertThat(equipmentList.items().size()).isEqualTo(0);
+    }
+
+
+    @Test
     public void create(){
-        when(this.technicianRepository.findById(EQUIPMENT_ONE.getTechnician().getId())).thenReturn(Optional.of(TECHNICIAN_ONE));
-        when(this.equipmentRepository.save(EQUIPMENT_ONE)).thenReturn(EQUIPMENT_ONE);
+        when(this.equipmentRepository.existsByIdSefitIgnoreCase(EQUIPMENT_ONE.getIdSefit()))
+                .thenReturn(false);
+        when(this.technicianService.findIfExists(EQUIPMENT_ONE.getTechnician().getId()))
+                .thenReturn(EQUIPMENT_ONE.getTechnician());
 
         var createdEquipment = this.equipmentService.create(
-                new EquipmentInputDTO(EQUIPMENT_ONE.getLocation(), EQUIPMENT_ONE.getIdSefit(), EQUIPMENT_ONE.getType(), EQUIPMENT_ONE.getSerialNumber(), EQUIPMENT_ONE.getTechnician().getId())
+                new EquipmentInputDTO(
+                        EQUIPMENT_ONE.getLocation(),
+                        EQUIPMENT_ONE.getIdSefit(),
+                        EQUIPMENT_ONE.getType(),
+                        EQUIPMENT_ONE.getSerialNumber(),
+                        EQUIPMENT_ONE.getTechnician().getId()
+                )
         );
 
         assertThat(createdEquipment).isEqualTo(new EquipmentOutputDTO(EQUIPMENT_ONE));
@@ -101,14 +121,24 @@ public class EquipmentServiceTest {
 
     @Test
     public void updateById(){
+        when(this.equipmentRepository.findById(EQUIPMENT_ID)).thenReturn(Optional.of(EQUIPMENT_ONE));
+        when(this.equipmentRepository.existsByIdSefitIgnoreCaseAndIdNot(EQUIPMENT_ONE.getIdSefit(), EQUIPMENT_ID))
+                .thenReturn(false);
         when(this.technicianService.findIfExists(EQUIPMENT_ONE.getTechnician().getId()))
                 .thenReturn(EQUIPMENT_ONE.getTechnician());
-        when(this.equipmentRepository.save(EQUIPMENT_ONE)).thenReturn(EQUIPMENT_ONE);
 
-        var updatedEquipment = this.equipmentService
-                .updateById(EQUIPMENT_ID, new EquipmentInputDTO(EQUIPMENT_ONE.getLocation(), EQUIPMENT_ONE.getIdSefit(), EQUIPMENT_ONE.getType(), EQUIPMENT_ONE.getSerialNumber(), EQUIPMENT_ONE.getTechnician().getId())
+        var updatedEquipment = this.equipmentService.updateById(
+                EQUIPMENT_ID,
+                new EquipmentInputDTO(
+                        EQUIPMENT_ONE.getLocation(),
+                        EQUIPMENT_ONE.getIdSefit(),
+                        EQUIPMENT_ONE.getType(),
+                        EQUIPMENT_ONE.getSerialNumber(),
+                        EQUIPMENT_ONE.getTechnician().getId()
+                )
         );
 
+        EQUIPMENT_ONE.setId(updatedEquipment.id());
         assertThat(updatedEquipment).isEqualTo(new EquipmentOutputDTO(EQUIPMENT_ONE));
     }
 
@@ -121,21 +151,6 @@ public class EquipmentServiceTest {
         assertThatThrownBy(() -> this.equipmentService.updateById(EQUIPMENT_ID, new EquipmentInputDTO(EQUIPMENT_ONE.getLocation(), EQUIPMENT_ONE.getIdSefit(), EQUIPMENT_ONE.getType(), EQUIPMENT_ONE.getSerialNumber(), EQUIPMENT_ONE.getTechnician().getId())))
                 .isInstanceOf(ConflictException.class)
                 .hasMessage(Constants.ID_SEFIT_ALREADY_EXISTS);
-    }
-
-    @Test
-    public void listAllBySearchReturnsEmptyPage(){
-        var searchTerm = "Inexistente";
-        var page = PageRequest.of(0, 10);
-
-        when(this.equipmentRepository
-                .findByLocationContainingIgnoreCaseOrIdSefitContainingIgnoreCase(searchTerm, searchTerm, page))
-                .thenReturn(Page.empty(page));
-
-        var equipmentList = this.equipmentService.listAllBySearch(searchTerm, page);
-
-        assertThat(equipmentList.total()).isEqualTo(0);
-        assertThat(equipmentList.items().size()).isEqualTo(0);
     }
 
     @Test
